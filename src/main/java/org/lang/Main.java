@@ -5,7 +5,6 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Compiler compiler = new Compiler();
 
         System.out.println("Basic REPL");
         while (true) {
@@ -18,7 +17,7 @@ public class Main {
                 case "exit":
                     System.exit(0);
                 default:
-                    compiler.eval();
+                    eval(choice);
             }
         }
     }
@@ -26,5 +25,18 @@ public class Main {
     private static void printHelp() {
         System.out.println("This is a simple REPL for evaluating expressions");
         System.out.println("Supported characters are - [0-9], +, -, *, /, (, )");
+    }
+
+    private static void eval(String text) {
+        Lexer lexer = new Lexer(text);
+
+        while (true) {
+            var token = lexer.nextToken();
+
+            if (token.getKind() == SyntaxKind.EndOfFileToken) {
+                break;
+            }
+            System.out.println(token);
+        }
     }
 }
