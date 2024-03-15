@@ -1,7 +1,8 @@
-package org.lang;
+package org.lang.syntax;
 
-import java.util.List;
-import java.util.Optional;
+import org.lang.ColorPrint;
+import org.lang.Evaluator;
+
 import java.util.Scanner;
 
 public class Main {

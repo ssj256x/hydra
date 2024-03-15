@@ -1,4 +1,4 @@
-package org.lang;
+package org.lang.syntax;
 
 public enum SyntaxKind {
 

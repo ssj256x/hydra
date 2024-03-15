@@ -1,4 +1,4 @@
-package org.lang;
+package org.lang.syntax;
 
 import java.util.Collections;
 import java.util.List;

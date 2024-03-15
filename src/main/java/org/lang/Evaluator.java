@@ -1,5 +1,7 @@
 package org.lang;
 
+import org.lang.syntax.*;
+
 import static java.lang.StringTemplate.STR;
 
 public class Evaluator {
