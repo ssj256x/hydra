@@ -13,7 +13,7 @@ public class LiteralExpressionSyntax extends ExpressionSyntax {
 
     @Override
     public SyntaxKind getKind() {
-        return SyntaxKind.NumberExpression;
+        return SyntaxKind.LiteralExpression;
     }
 
     @Override
@@ -27,6 +27,6 @@ public class LiteralExpressionSyntax extends ExpressionSyntax {
 
     @Override
     public String toString() {
-        return STR."NumberExpressionSyntax{numberToken=\{literalToken}}";
+        return STR."LiteralExpressionSyntax{numberToken=\{literalToken}}";
     }
 }
