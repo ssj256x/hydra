@@ -14,35 +14,34 @@ public class Evaluator {
     }
 
     private int evaluateExpression(ExpressionSyntax node) throws Exception {
-        if (node instanceof LiteralExpressionSyntax n) {
-            return (int) n.getLiteralToken().getValue();
-        }
+        return switch (node) {
+            case LiteralExpressionSyntax n:
+                yield (int) n.getLiteralToken().getValue();
 
-        if (node instanceof BinaryExpressionSyntax b) {
-            var left = evaluateExpression(b.getLeft());
-            var right = evaluateExpression(b.getRight());
+            case ParenthesizedExpressionSyntax p:
+                yield evaluateExpression(p.getExpression());
 
-            switch (b.getOperatorToken().getKind()) {
-                case PlusToken -> {
-                    return left + right;
-                }
-                case MinusToken -> {
-                    return left - right;
-                }
-                case SlashToken -> {
-                    return left / right;
-                }
-                case StarToken -> {
-                    return left * right;
-                }
-                default -> throw new Exception(STR."Unexpected Binary Operator \{b.getOperatorToken().getKind()}");
-            }
-        }
+            case UnaryExpressionSyntax u:
+                var operand = evaluateExpression(u.getOperand());
+                yield switch (u.getOperatorToken().getKind()) {
+                    case PlusToken -> operand;
+                    case MinusToken -> -operand;
+                    default -> throw new Exception(STR."Unexpected Unary Operator \{u.getOperatorToken().getKind()}");
+                };
+            case BinaryExpressionSyntax b:
+                var left = evaluateExpression(b.getLeft());
+                var right = evaluateExpression(b.getRight());
 
-        if(node instanceof ParenthesizedExpressionSyntax p) {
-            return evaluateExpression(p.getExpression());
-        }
+                yield switch (b.getOperatorToken().getKind()) {
+                    case PlusToken -> left + right;
+                    case MinusToken -> left - right;
+                    case SlashToken -> left / right;
+                    case StarToken -> left * right;
+                    default -> throw new Exception(STR."Unexpected Binary Operator \{b.getOperatorToken().getKind()}");
+                };
 
-        throw new Exception(STR."Unexpected node \{node.getKind()}");
+            default:
+                throw new Exception(STR."Unexpected node \{node.getKind()}");
+        };
     }
 }

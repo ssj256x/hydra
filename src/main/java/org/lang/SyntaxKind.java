@@ -16,6 +16,7 @@ public enum SyntaxKind {
 
     // Expressions
     LiteralExpression,
+    UnaryExpression,
     BinaryExpression,
     ParenthesizedExpression;
 
@@ -23,6 +24,13 @@ public enum SyntaxKind {
         return switch (this) {
             case StarToken, SlashToken -> 2;
             case PlusToken, MinusToken -> 1;
+            default -> 0;
+        };
+    }
+
+    public int getUnaryOperatorPrecedence() {
+        return switch (this) {
+            case PlusToken, MinusToken -> 3;
             default -> 0;
         };
     }

@@ -35,7 +35,17 @@ public class Parser {
 
 
     private ExpressionSyntax parseExpression(int parentPrecedence) {
-        var left = parsePrimaryExpression();
+
+        ExpressionSyntax left;
+        var unaryOperatorPrecedence = current().getKind().getUnaryOperatorPrecedence();
+
+        if(unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence) {
+            var operatorToken = nextToken();
+            var operand = parseExpression(unaryOperatorPrecedence);
+            left = new UnaryExpressionSyntax(operatorToken, operand);
+        } else {
+            left = parsePrimaryExpression();
+        }
 
         while (true) {
             var precedence = current().getKind().getBinaryOperatorPrecedence();
