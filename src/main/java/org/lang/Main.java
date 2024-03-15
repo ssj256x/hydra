@@ -57,10 +57,10 @@ public class Main {
         }
 
         if (!syntaxTree.getDiagnostics().isEmpty()) {
-            syntaxTree.getDiagnostics().forEach(System.out::println);
+            syntaxTree.getDiagnostics().forEach(ColorPrint.RED::print);
         } else {
             var e = new Evaluator(syntaxTree.getRoot());
-            System.out.println(e.evaluate());
+            ColorPrint.YELLOW.print(e.evaluate());
         }
     }
 
