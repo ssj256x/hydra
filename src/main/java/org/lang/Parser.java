@@ -28,12 +28,16 @@ public class Parser {
     }
 
     public SyntaxTree parse() {
-        var expression = parseTerm();
-        var endOfFileToken = match(SyntaxKind.EndOfFileToken);
+        var expression = parseExpression();
+        var endOfFileToken = matchToken(SyntaxKind.EndOfFileToken);
         return new SyntaxTree(diagnostics, expression, endOfFileToken);
     }
 
-    public ExpressionSyntax parseTerm() {
+    private ExpressionSyntax parseExpression() {
+        return parseTerm();
+    }
+
+    private ExpressionSyntax parseTerm() {
         var left = parseFactor();
 
         while (current().getKind() == SyntaxKind.PlusToken ||
@@ -46,7 +50,7 @@ public class Parser {
         return left;
     }
 
-    public ExpressionSyntax parseFactor() {
+    private ExpressionSyntax parseFactor() {
         var left = parsePrimaryExpression();
 
         while (current().getKind() == SyntaxKind.StarToken ||
@@ -64,17 +68,14 @@ public class Parser {
         if (current().getKind() == SyntaxKind.OpenParenthesisToken) {
             var left = nextToken();
             var expression = parseExpression();
-            var right = match(SyntaxKind.CloseParenthesisToken);
+            var right = matchToken(SyntaxKind.CloseParenthesisToken);
             return new ParenthesizedExpressionSyntax(left, expression, right);
         }
 
-        var numberToken = match(SyntaxKind.NumberToken);
-        return new NumberExpressionSyntax(numberToken);
+        var numberToken = matchToken(SyntaxKind.NumberToken);
+        return new LiteralExpressionSyntax(numberToken);
     }
 
-    private ExpressionSyntax parseExpression() {
-        return parseTerm();
-    }
 
     private SyntaxToken peek(int offset) {
         if (tokens.isEmpty()) {
@@ -98,7 +99,7 @@ public class Parser {
         return cur;
     }
 
-    private SyntaxToken match(SyntaxKind kind) {
+    private SyntaxToken matchToken(SyntaxKind kind) {
         if (current().getKind() == kind) return nextToken();
         var error = STR."Unexpected token: <\{current().getKind()}>, Expected: <\{kind}>";
         diagnostics.add(error);

@@ -1,16 +1,20 @@
 package org.lang;
 
 public enum SyntaxKind {
+
+    // Tokens
     BadToken,
-    NumberToken,
     WhitespaceToken,
+    EndOfFileToken,
+    NumberToken,
     PlusToken,
     MinusToken,
     StarToken,
     SlashToken,
     OpenParenthesisToken,
     CloseParenthesisToken,
-    EndOfFileToken,
+
+    // Expressions
     NumberExpression,
     BinaryExpression,
     ParenthesizedExpression,

@@ -14,8 +14,8 @@ public class Evaluator {
     }
 
     private int evaluateExpression(ExpressionSyntax node) throws Exception {
-        if (node instanceof NumberExpressionSyntax n) {
-            return (int) n.getNumberToken().getValue();
+        if (node instanceof LiteralExpressionSyntax n) {
+            return (int) n.getLiteralToken().getValue();
         }
 
         if (node instanceof BinaryExpressionSyntax b) {
