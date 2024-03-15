@@ -17,5 +17,13 @@ public enum SyntaxKind {
     // Expressions
     LiteralExpression,
     BinaryExpression,
-    ParenthesizedExpression,
+    ParenthesizedExpression;
+
+    public int getBinaryOperatorPrecedence() {
+        return switch (this) {
+            case StarToken, SlashToken -> 2;
+            case PlusToken, MinusToken -> 1;
+            default -> 0;
+        };
+    }
 }

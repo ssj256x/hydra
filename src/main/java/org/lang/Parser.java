@@ -38,7 +38,7 @@ public class Parser {
         var left = parsePrimaryExpression();
 
         while (true) {
-            var precedence = getBinaryOperatorPrecedence(current().getKind());
+            var precedence = current().getKind().getBinaryOperatorPrecedence();
             if (precedence == 0 || precedence <= parentPrecedence) {
                 break;
             }
@@ -49,15 +49,6 @@ public class Parser {
         }
         return left;
     }
-
-    private int getBinaryOperatorPrecedence(SyntaxKind kind) {
-        return switch (kind) {
-            case StarToken, SlashToken -> 2;
-            case PlusToken, MinusToken -> 1;
-            default -> 0;
-        };
-    }
-
 
     private ExpressionSyntax parsePrimaryExpression() {
 
