@@ -28,46 +28,42 @@ public class Parser {
     }
 
     public SyntaxTree parse() {
-        var expression = parseExpression();
+        var expression = parseExpression(0);
         var endOfFileToken = matchToken(SyntaxKind.EndOfFileToken);
         return new SyntaxTree(diagnostics, expression, endOfFileToken);
     }
 
-    private ExpressionSyntax parseExpression() {
-        return parseTerm();
-    }
 
-    private ExpressionSyntax parseTerm() {
-        var left = parseFactor();
-
-        while (current().getKind() == SyntaxKind.PlusToken ||
-                current().getKind() == SyntaxKind.MinusToken) {
-
-            SyntaxToken operatorToken = nextToken();
-            var right = parseFactor();
-            left = new BinaryExpressionSyntax(left, operatorToken, right);
-        }
-        return left;
-    }
-
-    private ExpressionSyntax parseFactor() {
+    private ExpressionSyntax parseExpression(int parentPrecedence) {
         var left = parsePrimaryExpression();
 
-        while (current().getKind() == SyntaxKind.StarToken ||
-                current().getKind() == SyntaxKind.SlashToken) {
+        while (true) {
+            var precedence = getBinaryOperatorPrecedence(current().getKind());
+            if (precedence == 0 || precedence <= parentPrecedence) {
+                break;
+            }
 
-            SyntaxToken operatorToken = nextToken();
-            var right = parsePrimaryExpression();
+            var operatorToken = nextToken();
+            var right = parseExpression(precedence);
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
         return left;
     }
+
+    private int getBinaryOperatorPrecedence(SyntaxKind kind) {
+        return switch (kind) {
+            case StarToken, SlashToken -> 2;
+            case PlusToken, MinusToken -> 1;
+            default -> 0;
+        };
+    }
+
 
     private ExpressionSyntax parsePrimaryExpression() {
 
         if (current().getKind() == SyntaxKind.OpenParenthesisToken) {
             var left = nextToken();
-            var expression = parseExpression();
+            var expression = parseExpression(0);
             var right = matchToken(SyntaxKind.CloseParenthesisToken);
             return new ParenthesizedExpressionSyntax(left, expression, right);
         }
