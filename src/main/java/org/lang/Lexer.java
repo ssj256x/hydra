@@ -38,7 +38,6 @@ public class Lexer {
             }
 
             var curText = text.substring(start, position);
-//            var value = tryIntParse(curText);
 
             int value;
 
@@ -64,28 +63,19 @@ public class Lexer {
             return new SyntaxToken(SyntaxKind.WhitespaceToken, start, curText, null);
         }
 
-        if (current() == '+') {
-            return new SyntaxToken(SyntaxKind.PlusToken, next(), "+", null);
-        }
-
-        if (current() == '-') {
-            return new SyntaxToken(SyntaxKind.MinusToken, next(), "-", null);
-        }
-
-        if (current() == '*') {
-            return new SyntaxToken(SyntaxKind.StarToken, next(), "*", null);
-        }
-
-        if (current() == '/') {
-            return new SyntaxToken(SyntaxKind.SlashToken, next(), "/", null);
-        }
-
-        if (current() == '(') {
-            return new SyntaxToken(SyntaxKind.OpenParenthesisToken, next(), "(", null);
-        }
-
-        if (current() == ')') {
-            return new SyntaxToken(SyntaxKind.CloseParenthesisToken, next(), ")", null);
+        switch (current()) {
+            case '+':
+                return new SyntaxToken(SyntaxKind.PlusToken, next(), "+", null);
+            case '-':
+                return new SyntaxToken(SyntaxKind.MinusToken, next(), "-", null);
+            case '*':
+                return new SyntaxToken(SyntaxKind.StarToken, next(), "*", null);
+            case '/':
+                return new SyntaxToken(SyntaxKind.SlashToken, next(), "/", null);
+            case '(':
+                return new SyntaxToken(SyntaxKind.OpenParenthesisToken, next(), "(", null);
+            case ')':
+                return new SyntaxToken(SyntaxKind.CloseParenthesisToken, next(), ")", null);
         }
 
         var error = STR."ERROR : Bad character in input \{current()}";
