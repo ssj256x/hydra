@@ -1,9 +1,13 @@
 package org.lang;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    private static boolean showTree = false;
+
+    public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("Basic REPL");
@@ -14,10 +18,14 @@ public class Main {
                 case "help":
                     printHelp();
                     break;
+                case "showTree":
+                    showTree = !showTree;
+                    System.out.println(showTree ? "showing parse trees" : "not showing parse trees");
+                    continue;
                 case "exit":
                     System.exit(0);
                 default:
-                    eval(choice);
+                    parse(choice);
             }
         }
     }
@@ -37,6 +45,45 @@ public class Main {
                 break;
             }
             System.out.println(token);
+        }
+    }
+
+    private static void parse(String text) throws Exception {
+
+        var syntaxTree = SyntaxTree.parse(text);
+
+        if (showTree) {
+            prettyPrint(syntaxTree.getRoot(), "", true);
+        }
+
+        if (!syntaxTree.getDiagnostics().isEmpty()) {
+            syntaxTree.getDiagnostics().forEach(System.out::println);
+        } else {
+            var e = new Evaluator(syntaxTree.getRoot());
+            System.out.println(e.evaluate());
+        }
+    }
+
+    private static void prettyPrint(SyntaxNode node, String indent, boolean isLast) {
+
+        var marker = isLast ? "└──" : "├──";
+
+        System.out.print(indent);
+        System.out.print(marker);
+        System.out.print(node.getKind().name());
+        if (node instanceof SyntaxToken t && t.getValue() != null) {
+            System.out.print(" ");
+            System.out.print(t.getValue());
+        }
+        System.out.println();
+        indent += isLast ? "   " : "│  ";
+
+        var lastChild = !node.getChildren().isEmpty() ?
+                node.getChildren().getLast() :
+                null;
+
+        for (var child : node.getChildren()) {
+            prettyPrint(child, indent, child == lastChild);
         }
     }
 }

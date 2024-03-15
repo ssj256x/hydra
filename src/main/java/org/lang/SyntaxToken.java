@@ -1,10 +1,13 @@
 package org.lang;
 
-public class SyntaxToken {
-    private SyntaxKind kind;
-    private int position;
-    private String text;
-    private Object value;
+import java.util.Collections;
+import java.util.List;
+
+public class SyntaxToken extends SyntaxNode {
+    private final SyntaxKind kind;
+    private final int position;
+    private final String text;
+    private final Object value;
 
     public SyntaxToken(SyntaxKind kind, int position, String text, Object value) {
         this.kind = kind;
@@ -17,6 +20,11 @@ public class SyntaxToken {
         return kind;
     }
 
+    @Override
+    public List<SyntaxNode> getChildren() {
+        return Collections.emptyList();
+    }
+
     public int getPosition() {
         return position;
     }
@@ -25,8 +33,12 @@ public class SyntaxToken {
         return text;
     }
 
+    public Object getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s: '%s'%s", kind.name(), text, value != null ? " " + value : "");
+        return STR."\{kind.name()}: '\{text}'\{value != null ? STR." \{value}" : ""}";
     }
 }

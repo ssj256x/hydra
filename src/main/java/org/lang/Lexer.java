@@ -1,12 +1,17 @@
 package org.lang;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Lexer {
     private final String text;
     private int position;
+    private final List<String> diagnostics;
 
     public Lexer(String text) {
         this.text = text;
         this.position = 0;
+        this.diagnostics = new ArrayList<>();
     }
 
     private char current() {
@@ -20,9 +25,6 @@ public class Lexer {
     }
 
     public SyntaxToken nextToken() {
-        // <numbers>
-        // + - / * ( )
-        // <whitespace>
 
         if (position >= text.length()) {
             return new SyntaxToken(SyntaxKind.EndOfFileToken, position, "\0", null);
@@ -36,7 +38,18 @@ public class Lexer {
             }
 
             var curText = text.substring(start, position);
-            var value = tryIntParse(curText);
+//            var value = tryIntParse(curText);
+
+            int value;
+
+            try {
+                value = Integer.parseInt(curText);
+            } catch (Exception e) {
+                var error = STR."ERROR : Text '\{curText}' cannot be represented as integer";
+                diagnostics.add(error);
+                return new SyntaxToken(SyntaxKind.BadToken, start, curText, null);
+            }
+
             return new SyntaxToken(SyntaxKind.NumberToken, start, curText, value);
         }
 
@@ -68,13 +81,15 @@ public class Lexer {
         }
 
         if (current() == '(') {
-            return new SyntaxToken(SyntaxKind.OpenParenToken, next(), "(", null);
+            return new SyntaxToken(SyntaxKind.OpenParenthesisToken, next(), "(", null);
         }
 
         if (current() == ')') {
-            return new SyntaxToken(SyntaxKind.CloseParenToken, next(), ")", null);
+            return new SyntaxToken(SyntaxKind.CloseParenthesisToken, next(), ")", null);
         }
 
+        var error = STR."ERROR : Bad character in input \{current()}";
+        diagnostics.add(error);
         return new SyntaxToken(SyntaxKind.BadToken, next(), text.substring(position - 1), null);
     }
 
@@ -83,8 +98,12 @@ public class Lexer {
         try {
             value = Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            return "<int-parse:false>";
+            return false;
         }
         return value;
+    }
+
+    public List<String> getDiagnostics() {
+        return diagnostics;
     }
 }
