@@ -1,13 +1,17 @@
 package org.lang;
 
+import org.lang.binding.BoundBinaryExpression;
+import org.lang.binding.BoundExpression;
+import org.lang.binding.BoundLiteralExpression;
+import org.lang.binding.BoundUnaryExpression;
 import org.lang.syntax.*;
 
 import static java.lang.StringTemplate.STR;
 
 public class Evaluator {
-    private final ExpressionSyntax root;
+    private final BoundExpression root;
 
-    public Evaluator(ExpressionSyntax root) {
+    public Evaluator(BoundExpression root) {
         this.root = root;
     }
 
@@ -15,31 +19,29 @@ public class Evaluator {
         return evaluateExpression(root);
     }
 
-    private int evaluateExpression(ExpressionSyntax node) throws Exception {
+    private int evaluateExpression(BoundExpression node) throws Exception {
         return switch (node) {
-            case LiteralExpressionSyntax n:
-                yield (int) n.getLiteralToken().getValue();
+            case BoundLiteralExpression n:
+                yield (int) n.getValue();
 
-            case ParenthesizedExpressionSyntax p:
-                yield evaluateExpression(p.getExpression());
+//            case ParenthesizedExpressionSyntax p:
+//                yield evaluateExpression(p.getExpression());
 
-            case UnaryExpressionSyntax u:
+            case BoundUnaryExpression u:
                 var operand = evaluateExpression(u.getOperand());
-                yield switch (u.getOperatorToken().getKind()) {
-                    case PlusToken -> operand;
-                    case MinusToken -> -operand;
-                    default -> throw new Exception(STR."Unexpected Unary Operator \{u.getOperatorToken().getKind()}");
+                yield switch (u.getOperatorKind()) {
+                    case Identity -> operand;
+                    case Negation -> -operand;
                 };
-            case BinaryExpressionSyntax b:
+            case BoundBinaryExpression b:
                 var left = evaluateExpression(b.getLeft());
                 var right = evaluateExpression(b.getRight());
 
-                yield switch (b.getOperatorToken().getKind()) {
-                    case PlusToken -> left + right;
-                    case MinusToken -> left - right;
-                    case SlashToken -> left / right;
-                    case StarToken -> left * right;
-                    default -> throw new Exception(STR."Unexpected Binary Operator \{b.getOperatorToken().getKind()}");
+                yield switch (b.getOperatorKind()) {
+                    case Addition -> left + right;
+                    case Subtraction -> left - right;
+                    case Division -> left / right;
+                    case Multiplication -> left * right;
                 };
 
             default:

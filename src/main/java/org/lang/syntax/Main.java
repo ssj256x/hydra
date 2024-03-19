@@ -2,6 +2,7 @@ package org.lang.syntax;
 
 import org.lang.ColorPrint;
 import org.lang.Evaluator;
+import org.lang.binding.Binder;
 
 import java.util.Scanner;
 
@@ -52,16 +53,21 @@ public class Main {
     private static void parse(String text) throws Exception {
 
         var syntaxTree = SyntaxTree.parse(text);
+        var binder = new Binder();
+        var boundExpression = binder.bindExpression(syntaxTree.getRoot());
+
+        var diagnostics = syntaxTree.getDiagnostics();
+        diagnostics.addAll(binder.getDiagnostics());
 
         if (showTree) {
             prettyPrint(syntaxTree.getRoot(), "", true);
         }
 
-        if (!syntaxTree.getDiagnostics().isEmpty()) {
-            syntaxTree.getDiagnostics().forEach(ColorPrint.RED::print);
+        if (!diagnostics.isEmpty()) {
+            syntaxTree.getDiagnostics().forEach(ColorPrint.RED::println);
         } else {
-            var e = new Evaluator(syntaxTree.getRoot());
-            ColorPrint.YELLOW.print(e.evaluate());
+            var e = new Evaluator(boundExpression);
+            ColorPrint.YELLOW.println(e.evaluate());
         }
     }
 

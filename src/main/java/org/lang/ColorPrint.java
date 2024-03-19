@@ -13,7 +13,11 @@ public enum ColorPrint {
         this.color = color;
     }
 
-    public void print(Object text) {
+    public void println(Object text) {
         System.out.println(STR."\{color}\{text}\{RESET}");
+    }
+
+    public void print(Object text) {
+        System.out.print(STR."\{color}\{text}\{RESET}");
     }
 }
