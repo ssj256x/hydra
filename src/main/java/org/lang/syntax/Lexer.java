@@ -15,13 +15,24 @@ public class Lexer {
     }
 
     private char current() {
-        if (position >= text.length()) return '\0';
-        return text.charAt(position);
+        return peek(0);
+    }
+
+    private char lookahead() {
+        return peek(1);
     }
 
     private int next() {
         // returns current value and then increments
         return position++;
+    }
+
+    private char peek(int offset) {
+        var index = position + offset;
+        if (index >= text.length()) {
+            return '\0';
+        }
+        return text.charAt(index);
     }
 
     public SyntaxToken nextToken() {
@@ -63,6 +74,18 @@ public class Lexer {
             return new SyntaxToken(SyntaxKind.WhitespaceToken, start, curText, null);
         }
 
+        if (Character.isLetter(current())) {
+            var start = position;
+
+            while (Character.isLetter(current())) {
+                next();
+            }
+
+            var curText = text.substring(start, position);
+            var kind = SyntaxKind.getKeyWordKind(curText);
+            return new SyntaxToken(kind, start, curText, null);
+        }
+
         switch (current()) {
             case '+':
                 return new SyntaxToken(SyntaxKind.PlusToken, next(), "+", null);
@@ -76,6 +99,18 @@ public class Lexer {
                 return new SyntaxToken(SyntaxKind.OpenParenthesisToken, next(), "(", null);
             case ')':
                 return new SyntaxToken(SyntaxKind.CloseParenthesisToken, next(), ")", null);
+            case '!':
+                return new SyntaxToken(SyntaxKind.BangToken, next(), "!", null);
+            case '&':
+                if (lookahead() == '&') {
+                    return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, position += 2, "&&", null);
+                }
+                break;
+            case '|':
+                if (lookahead() == '|') {
+                    return new SyntaxToken(SyntaxKind.PipePipeToken, position += 2, "||", null);
+                }
+                break;
         }
 
         var error = STR."ERROR : Bad character in input \{current()}";

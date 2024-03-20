@@ -11,8 +11,16 @@ public enum SyntaxKind {
     MinusToken,
     StarToken,
     SlashToken,
+    BangToken,
+    AmpersandAmpersandToken,
+    PipePipeToken,
     OpenParenthesisToken,
     CloseParenthesisToken,
+    IdentifierToken,
+
+    // Keywords
+    TrueKeyword,
+    FalseKeyword,
 
     // Expressions
     LiteralExpression,
@@ -22,16 +30,26 @@ public enum SyntaxKind {
 
     public int getBinaryOperatorPrecedence() {
         return switch (this) {
-            case StarToken, SlashToken -> 2;
-            case PlusToken, MinusToken -> 1;
+            case StarToken, SlashToken -> 4;
+            case PlusToken, MinusToken -> 3;
+            case AmpersandAmpersandToken -> 2;
+            case PipePipeToken -> 1;
             default -> 0;
         };
     }
 
     public int getUnaryOperatorPrecedence() {
         return switch (this) {
-            case PlusToken, MinusToken -> 3;
+            case PlusToken, MinusToken, BangToken -> 5;
             default -> 0;
+        };
+    }
+
+    public static SyntaxKind getKeyWordKind(String text) {
+        return switch (text) {
+            case "true" -> SyntaxKind.TrueKeyword;
+            case "false" -> SyntaxKind.FalseKeyword;
+            default -> SyntaxKind.IdentifierToken;
         };
     }
 }

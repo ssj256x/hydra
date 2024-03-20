@@ -39,7 +39,7 @@ public class Parser {
         ExpressionSyntax left;
         var unaryOperatorPrecedence = current().getKind().getUnaryOperatorPrecedence();
 
-        if(unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence) {
+        if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence) {
             var operatorToken = nextToken();
             var operand = parseExpression(unaryOperatorPrecedence);
             left = new UnaryExpressionSyntax(operatorToken, operand);
@@ -61,16 +61,23 @@ public class Parser {
     }
 
     private ExpressionSyntax parsePrimaryExpression() {
-
-        if (current().getKind() == SyntaxKind.OpenParenthesisToken) {
-            var left = nextToken();
-            var expression = parseExpression(0);
-            var right = matchToken(SyntaxKind.CloseParenthesisToken);
-            return new ParenthesizedExpressionSyntax(left, expression, right);
-        }
-
-        var numberToken = matchToken(SyntaxKind.NumberToken);
-        return new LiteralExpressionSyntax(numberToken);
+        return switch (current().getKind()) {
+            case OpenParenthesisToken -> {
+                var left = nextToken();
+                var expression = parseExpression(0);
+                var right = matchToken(SyntaxKind.CloseParenthesisToken);
+                yield new ParenthesizedExpressionSyntax(left, expression, right);
+            }
+            case TrueKeyword, FalseKeyword -> {
+                var keyWordToken = nextToken();
+                var value = keyWordToken    .getKind() == SyntaxKind.TrueKeyword;
+                yield new LiteralExpressionSyntax(keyWordToken, value);
+            }
+            default -> {
+                var numberToken = matchToken(SyntaxKind.NumberToken);
+                yield new LiteralExpressionSyntax(numberToken);
+            }
+        };
     }
 
 

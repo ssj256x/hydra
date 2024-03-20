@@ -15,14 +15,14 @@ public class Evaluator {
         this.root = root;
     }
 
-    public int evaluate() throws Exception {
+    public Object evaluate() throws Exception {
         return evaluateExpression(root);
     }
 
-    private int evaluateExpression(BoundExpression node) throws Exception {
+    private Object evaluateExpression(BoundExpression node) throws Exception {
         return switch (node) {
             case BoundLiteralExpression n:
-                yield (int) n.getValue();
+                yield n.getValue();
 
 //            case ParenthesizedExpressionSyntax p:
 //                yield evaluateExpression(p.getExpression());
@@ -30,18 +30,23 @@ public class Evaluator {
             case BoundUnaryExpression u:
                 var operand = evaluateExpression(u.getOperand());
                 yield switch (u.getOperatorKind()) {
-                    case Identity -> operand;
-                    case Negation -> -operand;
+                    case Identity -> (Integer) operand;
+                    case Negation -> -(Integer) operand;
+                    case LogicalNegation -> !(Boolean) operand;
+                    default -> throw new Exception(STR."Unexpected unary operator \{u.getOperand()}");
                 };
             case BoundBinaryExpression b:
                 var left = evaluateExpression(b.getLeft());
                 var right = evaluateExpression(b.getRight());
 
                 yield switch (b.getOperatorKind()) {
-                    case Addition -> left + right;
-                    case Subtraction -> left - right;
-                    case Division -> left / right;
-                    case Multiplication -> left * right;
+                    case Addition -> (Integer) left + (Integer) right;
+                    case Subtraction -> (Integer) left - (Integer) right;
+                    case Division -> (Integer) left / (Integer) right;
+                    case Multiplication -> (Integer) left * (Integer) right;
+                    case LogicalAnd -> (Boolean) left && (Boolean) right;
+                    case LogicalOr -> (Boolean) left || (Boolean) right;
+                    default -> throw new Exception(STR."Unexpected binary operator \{b.getOperatorKind()}");
                 };
 
             default:

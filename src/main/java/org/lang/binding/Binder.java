@@ -27,7 +27,8 @@ public class Binder {
     }
 
     private BoundExpression bindLiteralExpression(LiteralExpressionSyntax syntax) {
-        var value = syntax.getLiteralToken().getValue();
+        var value = syntax.getValue() != null ? syntax.getValue() : 0;
+        ;
         return new BoundLiteralExpression(value);
     }
 
@@ -51,7 +52,7 @@ public class Binder {
         var boundOperatorKind = bindBinaryOperatorKind(syntax.getOperatorToken().getKind(), boundLeft.getType(), boundRight.getType());
 
         if (boundOperatorKind == null) {
-            var err = STR."Unary operator \{syntax.getOperatorToken().getText()} is not defined for types \{boundLeft.getKind()} and \{boundRight.getKind()}";
+            var err = STR."Unary operator \{syntax.getOperatorToken().getText()} is not defined for types <\{boundLeft.getType()}> and <\{boundRight.getType()}>";
             diagnostics.add(err);
             return boundLeft;
         }
@@ -61,32 +62,44 @@ public class Binder {
     }
 
     private BoundUnaryOperatorKind bindUnaryOperatorKind(SyntaxKind kind, Class<?> operandType) throws Exception {
-
-        if (!operandType.equals(Integer.class)) {
-            return null;
+        if (operandType.equals(Integer.class)) {
+            return switch (kind) {
+                case PlusToken -> BoundUnaryOperatorKind.Identity;
+                case MinusToken -> BoundUnaryOperatorKind.Negation;
+                default -> null;
+            };
         }
 
-        return switch (kind) {
-            case PlusToken -> BoundUnaryOperatorKind.Identity;
-            case MinusToken -> BoundUnaryOperatorKind.Negation;
-            default -> throw new Exception(STR."Unexpected unary operator kind \{kind}");
-        };
+        if (operandType.equals(Boolean.class)) {
+            return switch (kind) {
+                case BangToken -> BoundUnaryOperatorKind.LogicalNegation;
+                default -> null;
+            };
+        }
+        return null;
     }
 
     private BoundBinaryOperatorKind bindBinaryOperatorKind(SyntaxKind kind,
                                                            Class<?> leftType,
                                                            Class<?> rightType) throws Exception {
 
-        if (!leftType.equals(Integer.class) || !rightType.equals(Integer.class)) {
-            return null;
+        if (leftType.equals(Integer.class) && rightType.equals(Integer.class)) {
+            return switch (kind) {
+                case PlusToken -> BoundBinaryOperatorKind.Addition;
+                case MinusToken -> BoundBinaryOperatorKind.Subtraction;
+                case StarToken -> BoundBinaryOperatorKind.Multiplication;
+                case SlashToken -> BoundBinaryOperatorKind.Division;
+                default -> null;
+            };
         }
 
-        return switch (kind) {
-            case PlusToken -> BoundBinaryOperatorKind.Addition;
-            case MinusToken -> BoundBinaryOperatorKind.Subtraction;
-            case StarToken -> BoundBinaryOperatorKind.Multiplication;
-            case SlashToken -> BoundBinaryOperatorKind.Division;
-            default -> throw new Exception(STR."Unexpected binary operator kind \{kind}");
-        };
+        if (leftType.equals(Boolean.class) && rightType.equals(Boolean.class)) {
+            return switch (kind) {
+                case AmpersandAmpersandToken -> BoundBinaryOperatorKind.LogicalAnd;
+                case PipePipeToken -> BoundBinaryOperatorKind.LogicalOr;
+                default -> null;
+            };
+        }
+        return null;
     }
 }
