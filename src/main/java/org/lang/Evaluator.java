@@ -4,7 +4,6 @@ import org.lang.binding.BoundBinaryExpression;
 import org.lang.binding.BoundExpression;
 import org.lang.binding.BoundLiteralExpression;
 import org.lang.binding.BoundUnaryExpression;
-import org.lang.syntax.*;
 
 import static java.lang.StringTemplate.STR;
 
@@ -29,7 +28,7 @@ public class Evaluator {
 
             case BoundUnaryExpression u:
                 var operand = evaluateExpression(u.getOperand());
-                yield switch (u.getOperatorKind()) {
+                yield switch (u.getOperator().getKind()) {
                     case Identity -> (Integer) operand;
                     case Negation -> -(Integer) operand;
                     case LogicalNegation -> !(Boolean) operand;
@@ -39,14 +38,14 @@ public class Evaluator {
                 var left = evaluateExpression(b.getLeft());
                 var right = evaluateExpression(b.getRight());
 
-                yield switch (b.getOperatorKind()) {
+                yield switch (b.getOperator().getKind()) {
                     case Addition -> (Integer) left + (Integer) right;
                     case Subtraction -> (Integer) left - (Integer) right;
                     case Division -> (Integer) left / (Integer) right;
                     case Multiplication -> (Integer) left * (Integer) right;
                     case LogicalAnd -> (Boolean) left && (Boolean) right;
                     case LogicalOr -> (Boolean) left || (Boolean) right;
-                    default -> throw new Exception(STR."Unexpected binary operator \{b.getOperatorKind()}");
+                    default -> throw new Exception(STR."Unexpected binary operator \{b.getOperator()}");
                 };
 
             default:

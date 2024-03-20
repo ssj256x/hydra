@@ -1,14 +1,12 @@
 package org.lang.binding;
 
-import java.lang.reflect.Type;
-
 public class BoundUnaryExpression extends BoundExpression {
 
-    private final BoundUnaryOperatorKind operatorKind;
+    private final BoundUnaryOperator operator;
     private final BoundExpression operand;
 
-    public BoundUnaryExpression(BoundUnaryOperatorKind operatorKind, BoundExpression operand) {
-        this.operatorKind = operatorKind;
+    public BoundUnaryExpression(BoundUnaryOperator operator, BoundExpression operand) {
+        this.operator = operator;
         this.operand = operand;
     }
 
@@ -22,8 +20,8 @@ public class BoundUnaryExpression extends BoundExpression {
         return BoundNodeKind.UnaryExpression;
     }
 
-    public BoundUnaryOperatorKind getOperatorKind() {
-        return operatorKind;
+    public BoundUnaryOperator getOperator() {
+        return operator;
     }
 
     public BoundExpression getOperand() {

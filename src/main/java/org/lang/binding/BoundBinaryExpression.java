@@ -3,14 +3,14 @@ package org.lang.binding;
 public class BoundBinaryExpression extends BoundExpression{
 
     private final BoundExpression left;
-    private final BoundBinaryOperatorKind operatorKind;
+    private final BoundBinaryOperator operator;
     private final BoundExpression right;
 
     public BoundBinaryExpression(BoundExpression left,
-                                 BoundBinaryOperatorKind operatorKind,
+                                 BoundBinaryOperator operator,
                                  BoundExpression right) {
         this.left = left;
-        this.operatorKind = operatorKind;
+        this.operator = operator;
         this.right = right;
     }
 
@@ -28,8 +28,8 @@ public class BoundBinaryExpression extends BoundExpression{
         return left;
     }
 
-    public BoundBinaryOperatorKind getOperatorKind() {
-        return operatorKind;
+    public BoundBinaryOperator getOperator() {
+        return operator;
     }
 
     public BoundExpression getRight() {
