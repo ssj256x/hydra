@@ -12,8 +12,17 @@ public class BoundBinaryOperator {
     private final Class<?> rightType;
     private final Class<?> resultType;
 
-    private BoundBinaryOperator(SyntaxKind syntaxKind, BoundBinaryOperatorKind kind, Class<?> type) {
+    private BoundBinaryOperator(SyntaxKind syntaxKind,
+                                BoundBinaryOperatorKind kind,
+                                Class<?> type) {
         this(syntaxKind, kind, type, type, type);
+    }
+
+    private BoundBinaryOperator(SyntaxKind syntaxKind,
+                                BoundBinaryOperatorKind kind,
+                                Class<?> operandTye,
+                                Class<?> resultType) {
+        this(syntaxKind, kind, operandTye, operandTye, resultType);
     }
 
     private BoundBinaryOperator(SyntaxKind syntaxKind,
@@ -34,6 +43,16 @@ public class BoundBinaryOperator {
             new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, Integer.class),
             new BoundBinaryOperator(SyntaxKind.StarToken, BoundBinaryOperatorKind.Multiplication, Integer.class),
             new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, Integer.class),
+
+            // Equality
+
+            // Between Integer and Boolean
+            new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, Integer.class, Boolean.class),
+            new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, Integer.class, Boolean.class),
+
+            // Between Boolean and Boolean
+            new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, Boolean.class),
+            new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, Boolean.class),
 
             // Logical
             new BoundBinaryOperator(SyntaxKind.AmpersandAmpersandToken, BoundBinaryOperatorKind.LogicalAnd, Boolean.class),

@@ -14,6 +14,8 @@ public enum SyntaxKind {
     BangToken,
     AmpersandAmpersandToken,
     PipePipeToken,
+    EqualsEqualsToken,
+    BangEqualsToken,
     OpenParenthesisToken,
     CloseParenthesisToken,
     IdentifierToken,
@@ -30,8 +32,9 @@ public enum SyntaxKind {
 
     public int getBinaryOperatorPrecedence() {
         return switch (this) {
-            case StarToken, SlashToken -> 4;
-            case PlusToken, MinusToken -> 3;
+            case StarToken, SlashToken -> 5;
+            case PlusToken, MinusToken -> 4;
+            case EqualsEqualsToken, BangEqualsToken -> 3;
             case AmpersandAmpersandToken -> 2;
             case PipePipeToken -> 1;
             default -> 0;
@@ -40,7 +43,7 @@ public enum SyntaxKind {
 
     public int getUnaryOperatorPrecedence() {
         return switch (this) {
-            case PlusToken, MinusToken, BangToken -> 5;
+            case PlusToken, MinusToken, BangToken -> 6;
             default -> 0;
         };
     }

@@ -99,8 +99,6 @@ public class Lexer {
                 return new SyntaxToken(SyntaxKind.OpenParenthesisToken, next(), "(", null);
             case ')':
                 return new SyntaxToken(SyntaxKind.CloseParenthesisToken, next(), ")", null);
-            case '!':
-                return new SyntaxToken(SyntaxKind.BangToken, next(), "!", null);
             case '&':
                 if (lookahead() == '&') {
                     return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, position += 2, "&&", null);
@@ -111,6 +109,15 @@ public class Lexer {
                     return new SyntaxToken(SyntaxKind.PipePipeToken, position += 2, "||", null);
                 }
                 break;
+            case '=':
+                if (lookahead() == '=') {
+                    return new SyntaxToken(SyntaxKind.EqualsEqualsToken, position += 2, "==", null);
+                }
+            case '!':
+                if (lookahead() == '=') {
+                    return new SyntaxToken(SyntaxKind.BangEqualsToken, position += 2, "!=", null);
+                }
+                return new SyntaxToken(SyntaxKind.BangToken, next(), "!", null);
         }
 
         var error = STR."ERROR : Bad character in input \{current()}";

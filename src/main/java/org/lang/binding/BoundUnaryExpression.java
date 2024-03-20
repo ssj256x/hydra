@@ -12,7 +12,7 @@ public class BoundUnaryExpression extends BoundExpression {
 
     @Override
     public Class<?> getType() {
-        return operand.getType();
+        return operator.getResultType();
     }
 
     @Override

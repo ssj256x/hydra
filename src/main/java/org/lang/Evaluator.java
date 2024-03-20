@@ -45,6 +45,8 @@ public class Evaluator {
                     case Multiplication -> (Integer) left * (Integer) right;
                     case LogicalAnd -> (Boolean) left && (Boolean) right;
                     case LogicalOr -> (Boolean) left || (Boolean) right;
+                    case Equals ->  left.equals(right);
+                    case NotEquals -> !left.equals(right);
                     default -> throw new Exception(STR."Unexpected binary operator \{b.getOperator()}");
                 };
 
